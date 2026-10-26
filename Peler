@@ -1,79 +1,78 @@
---// daffvdm UI Script - Working Hook Version
+--// SHIKI HUB - SAMP Style Edition
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 -- Hapus UI lama biar gak numpuk
-if CoreGui:FindFirstChild("DaffvdmUI") then
-    CoreGui.DaffvdmUI:Destroy()
+if CoreGui:FindFirstChild("ShikiSAMPUI") then
+    CoreGui.ShikiSAMPUI:Destroy()
 end
 
 -- Bikin ScreenGui Utama
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "DaffvdmUI"
+ScreenGui.Name = "ShikiSAMPUI"
 ScreenGui.Parent = CoreGui
 
--- Bikin Frame Menu Utama
+-- Bikin Frame Utama ala Dialog SAMP (Warna gelap transparan khas kotak SAMP)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 240)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -120)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderSizePixel = 0
+MainFrame.Size = UDim2.new(0, 300, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -130)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BackgroundTransparency = 0.15
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(0, 170, 255)
 MainFrame.Active = true
-MainFrame.Draggable = true -- Biar bisa digeser sesuka lu ke samping/mana aja
+MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.CornerRadius = UDim.new(0, 4)
 UICorner.Parent = MainFrame
 
--- Judul Menu
+-- Judul Dialog ala SAMP Dialog Box
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 45)
-Title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-Title.Text = "🔥 DAFFVDM HUB : WORKING 🔥"
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundColor3 = Color3.fromRGB(0, 102, 204)
+Title.Text = "  SHIKI SAMP HUB [ v1.0 ]"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextScaled = true
-Title.Font = Enum.Font.SourceSansBold
+Title.Font = Enum.Font.Code
 Title.Parent = MainFrame
 
 local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 10)
+TitleCorner.CornerRadius = UDim.new(0, 4)
 TitleCorner.Parent = Title
 
--- Tombol Minimize / Buka-Tutup (-)
+-- Tombol Close / Minimize (X style SAMP)
 local MinimizeBtn = Instance.new("TextButton")
-MinimizeBtn.Size = UDim2.new(0, 38, 0, 38)
-MinimizeBtn.Position = UDim2.new(1, -42, 0, 3.5)
-MinimizeBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-MinimizeBtn.Text = "-"
+MinimizeBtn.Size = UDim2.new(0, 35, 0, 35)
+MinimizeBtn.Position = UDim2.new(1, -35, 0, 0)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+MinimizeBtn.Text = "X"
 MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 MinimizeBtn.TextScaled = true
-MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.Font = Enum.Font.Code
 MinimizeBtn.Parent = Title
 
-local MinCorner = Instance.new("UICorner")
-MinCorner.CornerRadius = UDim.new(0, 6)
-MinCorner.Parent = MinimizeBtn
-
--- Tombol OPEN Melayang
+-- Tombol OPEN SAMP Style di Pojok kalau diminimize
 local OpenBtn = Instance.new("TextButton")
-OpenBtn.Size = UDim2.new(0, 60, 0, 60)
-OpenBtn.Position = UDim2.new(0, 20, 0, 100)
-OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-OpenBtn.Text = "OPEN"
+OpenBtn.Size = UDim2.new(0, 90, 0, 35)
+OpenBtn.Position = UDim2.new(0, 15, 0, 15)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 102, 204)
+OpenBtn.Text = "~ SHIKI ~"
 OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 OpenBtn.TextScaled = true
-OpenBtn.Font = Enum.Font.SourceSansBold
+OpenBtn.Font = Enum.Font.Code
 OpenBtn.Visible = false
 OpenBtn.Active = true
 OpenBtn.Draggable = true
 OpenBtn.Parent = ScreenGui
 
 local OpenCorner = Instance.new("UICorner")
-OpenCorner.CornerRadius = UDim.new(0, 10)
+OpenCorner.CornerRadius = UDim.new(0, 4)
 OpenCorner.Parent = OpenBtn
 
 MinimizeBtn.MouseButton1Click:Connect(function()
@@ -86,104 +85,100 @@ OpenBtn.MouseButton1Click:Connect(function()
     OpenBtn.Visible = false
 end)
 
--- Status Variable Fitur
-getgenv().ToggleSpeed = false
-getgenv().AutoRebirth = false
-getgenv().ToggleAntiAFK = false
+-- Status Variabel Fitur
+getgenv().ShikiRebirth = false
+getgenv().ShikiSpeed = false
 
--- 1. Anti-AFK Fix (Simulasi klik virtual yang aman)
-task.spawn(function()
-    while task.wait(15) do
-        if getgenv().ToggleAntiAFK then
-            pcall(function()
-                VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-                task.wait(1)
-                VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            end)
+-- Fungsi Remote Finder Game
+local function getRemote(nameKeyword)
+    for _, v in pairs(ReplicatedStorage:GetDescendants()) do
+        if v:IsA("RemoteEvent") and v.Name:lower():find(nameKeyword) then
+            return v
         end
     end
-end)
+    return nil
+end
 
--- 2. Auto Rebirth Fix (Mencari tombol UI asli game untuk diklik otomatis lewat VirtualUser / ClickDetector)
+-- 1. Auto Rebirth Logic
 task.spawn(function()
     while task.wait(1) do
-        if getgenv().AutoRebirth then
+        if getgenv().ShikiRebirth then
             pcall(function()
-                -- Menembak atau mencari event rebirth di dalam game
-                for _, v in pairs(game:GetDescendants()) do
-                    if v:IsA("RemoteEvent") and (v.Name:lower():find("rebirth") or v.Name:lower():find("kelahiran")) then
-                        v:FireServer()
-                    end
+                local rebirthRemote = getRemote("rebirth") or getRemote("kelahiran") or getRemote("upgrade")
+                if rebirthRemote then
+                    rebirthRemote:FireServer()
                 end
             end)
         end
     end
 end)
 
--- 3. Speed Boost Fix (Memakai HeartService agar kecepatan lari dikunci terus di 60)
+-- 2. Speed Boost Logic
 RunService.Heartbeat:Connect(function()
-    if getgenv().ToggleSpeed then
+    if getgenv().ShikiSpeed then
         pcall(function()
             local char = LocalPlayer.Character
             if char and char:FindFirstChild("Humanoid") then
-                char.Humanoid.WalkSpeed = 60
+                char.Humanoid.WalkSpeed = 65
             end
         end)
     end
 end)
 
--- Fungsi Pembuat Tombol Toggle
+-- Fungsi Pembuat Tombol ala SAMP Dialog List Button
 local function CreateButton(name, posY, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.92, 0, 0, 40)
     btn.Position = UDim2.new(0.04, 0, 0, posY)
-    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    btn.Text = name .. " : [ OFF ]"
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    btn.BorderColor3 = Color3.fromRGB(0, 170, 255)
+    btn.BorderSizePixel = 1
+    btn.Text = " { 0xFFFFFFFF }" .. name .. " : [ OFF ]"
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextScaled = true
-    btn.Font = Enum.Font.SourceSansBold
+    btn.Font = Enum.Font.Code
     btn.Parent = MainFrame
 
     local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.CornerRadius = UDim.new(0, 4)
     btnCorner.Parent = btn
 
     local active = false
     btn.MouseButton1Click:Connect(function()
         active = not active
         if active then
-            btn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-            btn.Text = name .. " : [ ON ]"
+            btn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+            btn.Text = " { 0x00FF00FF }" .. name .. " : [ ON ]"
         else
-            btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-            btn.Text = name .. " : [ OFF ]"
+            btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+            btn.Text = " { 0xFFFFFFFF }" .. name .. " : [ OFF ]"
         end
         callback(active)
     end)
 end
 
--- Pasang Tombol-Tombol
-CreateButton("Speed Boost (60)", 55, function(state)
-    getgenv().ToggleSpeed = state
+-- Pasang Tombol-Tombol Shiki Hub
+CreateButton("SHIKI Auto Rebirth", 50, function(state)
+    getgenv().ShikiRebirth = state
 end)
 
-CreateButton("Auto Rebirth", 102, function(state)
-    getgenv().AutoRebirth = state
+CreateButton("SHIKI Speed Boost", 100, function(state)
+    getgenv().ShikiSpeed = state
 end)
 
-CreateButton("Anti-AFK", 149, function(state)
-    getgenv().ToggleAntiAFK = state
-end)
-
--- Info Label Bawah
+-- Status Bar Bawah ala SAMP Client Info
 local InfoLabel = Instance.new("TextLabel")
-InfoLabel.Size = UDim2.new(1, 0, 0, 30)
-InfoLabel.Position = UDim2.new(0, 0, 0.85, 0)
-InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "Status: Working Hook Active"
-InfoLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+InfoLabel.Size = UDim2.new(0.92, 0, 0, 35)
+InfoLabel.Position = UDim2.new(0.04, 0, 0.82, 0)
+InfoLabel.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+InfoLabel.Text = "Shiki Status: Connected [SAMP Style]"
+InfoLabel.TextColor3 = Color3.fromRGB(0, 255, 128)
 InfoLabel.TextScaled = true
-InfoLabel.Font = Enum.Font.SourceSansItalic
+InfoLabel.Font = Enum.Font.Code
 InfoLabel.Parent = MainFrame
 
-print("[daffvdmmod] Working UI Hook Loaded!")
+local InfoCorner = Instance.new("UICorner")
+InfoCorner.CornerRadius = UDim.new(0, 4)
+InfoCorner.Parent = InfoLabel
+
+print("[SHIKI-SAMP] Script Loaded Successfully by Shiki!")
