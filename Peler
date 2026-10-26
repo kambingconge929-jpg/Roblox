@@ -1,0 +1,35 @@
+--// daffvdm Auto Train / Auto Clicker Script for Simulator Games
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+
+-- Status Toggle (Bisa diubah jadi false kalau mau dimatiin)
+getgenv().AutoClick = true
+getgenv().AntiAFK = true
+
+-- Fitur Anti AFK biar gak ke-kick dari server pas ditinggal tidur/nyuci
+if getgenv().AntiAFK then
+    local vu = game:GetService("VirtualUser")
+    LocalPlayer.Idled:Connect(function()
+        vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    end)
+end
+
+-- Loop Utama Auto Click / Tap (Simulasi klik layar game buat nambah power +1)
+task.spawn(function()
+    while task.wait(0.1) do -- Kecepatan klik (bisa dikecilin misal 0.05 biar makin ngebut)
+        if getgenv().AutoClick then
+            pcall(function()
+                -- Simulasi klik kiri mouse / tap layar HP ke game
+                VirtualUser:Button1Down(Vector2.new(100, 100))
+                task.wait(0.05)
+                VirtualUser:Button1Up(Vector2.new(100, 100))
+            end)
+        end
+    end
+end)
+
+print("[daffvdmmod] Script Auto Clicker Anime Evolution Berhasil Dijalankan!")
