@@ -1,11 +1,10 @@
---// daffvdm UI Script - Full Toggle Hub (Speed, Rebirth, Anti-AFK)
+--// daffvdm UI Script - Toggle Minimize/Maximize Feature
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- Hapus UI lama kalau masih nyantol biar gak numpuk
+-- Hapus UI lama biar gak numpuk
 if CoreGui:FindFirstChild("DaffvdmUI") then
     CoreGui.DaffvdmUI:Destroy()
 end
@@ -15,7 +14,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "DaffvdmUI"
 ScreenGui.Parent = CoreGui
 
--- Bikin Frame Menu Melayang
+-- Bikin Frame Menu Melayang Utama
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 260, 0, 230)
 MainFrame.Position = UDim2.new(0.5, -130, 0.4, -115)
@@ -33,7 +32,7 @@ UICorner.Parent = MainFrame
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Title.Text = "🔥 DAFFVDM HUB : FULL TOGGLE 🔥"
+Title.Text = "🔥 DAFFVDM HUB : TOGGLE UI 🔥"
 Title.TextColor3 = Color3.fromRGB(0, 255, 255)
 Title.TextScaled = true
 Title.Font = Enum.Font.SourceSansBold
@@ -43,12 +42,59 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 10)
 TitleCorner.Parent = Title
 
--- Status Variable Fitur (Default OFF)
+-- Tombol Minimize / Buka-Tutup (Tombol X kecil di pojok kanan atas judul)
+local MinimizeBtn = Instance.new("TextButton")
+MinimizeBtn.Size = UDim2.new(0, 35, 0, 35)
+MinimizeBtn.Position = UDim2.new(1, -38, 0, 2.5)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+MinimizeBtn.Text = "-"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.TextScaled = true
+MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.Parent = Title
+
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 6)
+MinCorner.Parent = MinimizeBtn
+
+-- Tombol Mengapung Kecil (Open Button) kalau UI ditutup
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Size = UDim2.new(0, 50, 0, 50)
+OpenBtn.Position = UDim2.new(0, 20, 0, 100)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+OpenBtn.Text = "OPEN"
+OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenBtn.TextScaled = true
+OpenBtn.Font = Enum.Font.SourceSansBold
+OpenBtn.Visible = false -- Awalnya disembunyiin karena menu utama lagi kebuka
+OpenBtn.Active = true
+OpenBtn.Draggable = true
+OpenBtn.Parent = ScreenGui
+
+local OpenCorner = Instance.new("UICorner")
+OpenCorner.CornerRadius = UDim.new(0, 8)
+OpenCorner.Parent = OpenBtn
+
+-- Logika Buka-Tutup Menu Utama
+local menuVisible = true
+MinimizeBtn.MouseButton1Click:Connect(function()
+    menuVisible = false
+    MainFrame.Visible = false
+    OpenBtn.Visible = true -- Munculkan tombol kecil di layar
+end)
+
+OpenBtn.MouseButton1Click:Connect(function()
+    menuVisible = true
+    MainFrame.Visible = true
+    OpenBtn.Visible = false -- Sembunyikan tombol kecil
+end)
+
+-- Status Variable Fitur
 getgenv().ToggleSpeed = false
 getgenv().AutoRebirth = false
 getgenv().ToggleAntiAFK = false
 
--- 1. Sistem Anti-AFK (Bisa di-ON/OFF)
+-- 1. Anti-AFK Fix
 task.spawn(function()
     while task.wait(1) do
         if getgenv().ToggleAntiAFK then
@@ -61,15 +107,14 @@ task.spawn(function()
     end
 end)
 
--- 2. Sistem Auto Rebirth (Mendeteksi tombol/remote rebirth game)
+-- 2. Auto Rebirth Fix
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(0.5) do
         if getgenv().AutoRebirth then
             pcall(function()
-                -- Cari RemoteEvent Rebirth di dalam game
-                for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-                    if remote:IsA("RemoteEvent") and (remote.Name:lower():find("rebirth") or remote.Name:lower():find("kelahiran")) then
-                        remote:FireServer()
+                for _, v in pairs(game:GetDescendants()) do
+                    if v:IsA("RemoteEvent") and (v.Name:lower():find("rebirth") or v.Name:lower():find("kelahiran") or v.Name:lower():find("upgrade")) then
+                        v:FireServer()
                     end
                 end
             end)
@@ -77,18 +122,18 @@ task.spawn(function()
     end
 end)
 
--- 3. Sistem Speed Boost (Bisa di-ON/OFF)
+-- 3. Speed Boost Fix
 task.spawn(function()
-    while task.wait(0.5) do
+    while task.wait(0.2) do
         if getgenv().ToggleSpeed then
             pcall(function()
                 if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character.Humanoid.WalkSpeed = 50
+                    LocalPlayer.Character.Humanoid.WalkSpeed = 60
                 end
             end)
         else
             pcall(function()
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid.WalkSpeed == 50 then
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid.WalkSpeed == 60 then
                     LocalPlayer.Character.Humanoid.WalkSpeed = 16
                 end
             end)
@@ -96,7 +141,7 @@ task.spawn(function()
     end
 end)
 
--- Fungsi Pembuat Tombol Toggle ON/OFF
+-- Fungsi Tombol Toggle Fitur
 local function CreateButton(name, posY, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.9, 0, 0, 38)
@@ -116,17 +161,17 @@ local function CreateButton(name, posY, callback)
     btn.MouseButton1Click:Connect(function()
         active = not active
         if active then
-            btn.BackgroundColor3 = Color3.fromRGB(0, 170, 0) -- Warna Hijau pas ON
+            btn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
             btn.Text = name .. " : ON"
         else
-            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Warna Abu pas OFF
+            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
             btn.Text = name .. " : OFF"
         end
         callback(active)
     end)
 end
 
--- Pasang Tombol-Tombol ke UI
+-- Pasang Tombol Fitur
 CreateButton("Speed Boost", 50, function(state)
     getgenv().ToggleSpeed = state
 end)
@@ -139,15 +184,15 @@ CreateButton("Anti-AFK", 136, function(state)
     getgenv().ToggleAntiAFK = state
 end)
 
--- Info Label di Bawah Menu
+-- Info Label
 local InfoLabel = Instance.new("TextLabel")
 InfoLabel.Size = UDim2.new(1, 0, 0, 30)
 InfoLabel.Position = UDim2.new(0, 0, 0.82, 0)
 InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "Status: UI Ready | Select Toggle"
+InfoLabel.Text = "Status: UI Hide/Show Ready!"
 InfoLabel.TextColor3 = Color3.fromRGB(170, 170, 170)
 InfoLabel.TextScaled = true
 InfoLabel.Font = Enum.Font.SourceSansItalic
 InfoLabel.Parent = MainFrame
 
-print("[daffvdmmod] Full Toggle UI Hub Loaded Successfully!")
+print("[daffvdmmod] UI with Minimize Feature Loaded!")
